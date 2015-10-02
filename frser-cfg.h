@@ -19,7 +19,7 @@
 //#define FRSER_FEAT_DBG_CONSOLE
 
 /* Name provided to flashrom to identify what the thing is. Max 16 bytes */
-#define FRSER_NAME "frser-uno-u2"
+#define FRSER_NAME "frser-spi-u2"
 
 /* Attached address lines, only if FRSER_FEAT_PARALLEL */
 //#define FRSER_PARALLEL_BITS 19

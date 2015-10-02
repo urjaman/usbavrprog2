@@ -1,4 +1,4 @@
-frser-uno-u2
+frser-spi-u2
 ===========
 
 TODO
