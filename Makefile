@@ -18,34 +18,34 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-PROJECT=frser-duino
+PROJECT=frser-uno-u2
 DEPS=uart.h main.h Makefile
-SOURCES=main.c uart.c spihw.c
+
+SOURCES=main.c spihw.c Descriptors.c fast-usbserial.c USB-Drivers/ConfigDescriptor.c USB-Drivers/DeviceStandardReq.c USB-Drivers/Events.c USB-Drivers/USBController.c USB-Drivers/USBTask.c USB-Drivers/Device.c USB-Drivers/Endpoint.c USB-Drivers/SimpleCDC.c USB-Drivers/USBInterrupt.c
+
 CC=avr-gcc
 LD=avr-ld
 OBJCOPY=avr-objcopy
-MMCU=atmega328p
+MMCU=atmega16u2
 
-# These defaults are for the U2-equipped arduino,
-# feel free to change.
-
-#Device
-SERIAL_DEV ?= /dev/ttyUSB0
-# Bootloader
-BLBAUD ?= 115200
-# Flashrom serial (=serprog)
-FRBAUD ?= 2000000
-#Additional defines (used my make ftdi)
-DFLAGS ?=
-
-AVRDUDECMD=avrdude -c arduino -p m328p -P $(SERIAL_DEV) -b $(BLBAUD) 
+AVRDUDECMD=avrdude -c avrispmkii -p m16u2 -P usb
 
 #AVRBINDIR=/usr/avr/bin/
 
-CFLAGS=-mmcu=$(MMCU) -DBAUD=$(FRBAUD) -Os -Wl,--relax -fno-inline-small-functions -fno-tree-switch-conversion -frename-registers -g -Wall -W -pipe -flto -fwhole-program -std=gnu99 $(DFLAGS)
+CFLAGS=-mmcu=$(MMCU) -Os -Wl,--relax -fno-inline-small-functions -fno-tree-switch-conversion -frename-registers -g -Wall -W -pipe -flto -fwhole-program -std=gnu99 $(DFLAGS)
+
+LUFA_OPTS  = -D USB_DEVICE_ONLY
+LUFA_OPTS += -D FIXED_CONTROL_ENDPOINT_SIZE=8
+LUFA_OPTS += -D FIXED_NUM_CONFIGURATIONS=1
+LUFA_OPTS += -D USE_FLASH_DESCRIPTORS
+LUFA_OPTS += -D NO_DEVICE_SELF_POWER
+LUFA_OPTS += -D NO_DEVICE_REMOTE_WAKEUP
+LUFA_OPTS += -D DEVICE_STATE_AS_GPIOR=2
+LUFA_OPTS += -D USE_STATIC_OPTIONS="(USB_DEVICE_OPT_FULLSPEED | USB_OPT_REG_ENABLED | USB_OPT_AUTO_PLL)"
+
+CFLAGS += $(LUFA_OPTS)
 
 include libfrser/Makefile.frser
-include libfrser/Makefile.spilib
 include libfrser/Makefile.spihw_avrspi
 
 
@@ -58,7 +58,7 @@ $(PROJECT).bin: $(PROJECT).out
 	$(AVRBINDIR)$(OBJCOPY) -j .text -j .data -O binary $(PROJECT).out $(PROJECT).bin
 
 $(PROJECT).out: $(SOURCES) $(DEPS)
-	$(AVRBINDIR)$(CC) $(CFLAGS) -I. -o $(PROJECT).out $(SOURCES)
+	$(AVRBINDIR)$(CC) $(CFLAGS) -I. -IUSB-Drivers -o $(PROJECT).out $(SOURCES)
 	$(AVRBINDIR)avr-size $(PROJECT).out
 
 asm: $(SOURCES) $(DEPS)
@@ -79,16 +79,3 @@ clean:
 
 objdump: $(PROJECT).out
 	$(AVRBINDIR)avr-objdump -xdC $(PROJECT).out | less
-
-# Compatibility with serprog-duino / User Friendlyness helpers
-u2:
-	DFLAGS= FRBAUD=115200 $(MAKE) clean all
-
-flash-u2:
-	BLBAUD=115200 SERIAL_DEV=/dev/ttyACM0 $(MAKE) program
-
-ftdi:
-	DFLAGS=-DFTDI FRBAUD=2000000 $(MAKE) clean all
-
-flash-ftdi:
-	BLBAUD=57600 SERIAL_DEV=/dev/ttyUSB0 $(MAKE) program

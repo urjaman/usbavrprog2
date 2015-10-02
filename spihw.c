@@ -19,7 +19,9 @@
  */
 
 #include "main.h"
-#include "spilib.h"
+#include "uart.h"
+#include "fast-usbserial.h"
+#include "spihw.h"
 
 /* This is just a bit of glue between parts of libfrser. */
 
@@ -39,6 +41,45 @@ void flash_select_protocol(uint8_t allowed_protocols) {
 	spi_init();
 }
 
-void flash_spiop(uint32_t s, uint32_t r) {
-	spi_spiop(s,r);
+static void spi_spiop_start(uint32_t sbytes) {
+	spi_select();
+	if (sbytes) do {
+		uint8_t rxc;
+		do {
+			rxc = uart_isdata();
+		} while (!rxc);
+		if (rxc > sbytes) rxc = sbytes;
+		uint8_t dc = rxc;
+		do {
+			spi_txrx(Endpoint_Read_Byte());
+		} while(--rxc);
+		uart_recv_ctrl_cnt(dc);
+		sbytes -= dc;
+	} while (sbytes);
+}
+
+static void spi_spiop_end(uint32_t rbytes) {
+	if (rbytes) do {
+		SPDR = 0xFF;
+		uint8_t txc = uart_send_getfree();
+		if (txc > rbytes) txc = rbytes;
+		uint8_t dc = txc;
+		txc--;
+		if (txc) do {
+			loop_until_bit_is_set(SPSR,SPIF);
+			Endpoint_Write_Byte(SPDR);
+			SPDR = 0xFF;
+		} while (--txc);
+		rbytes -= dc;
+		loop_until_bit_is_set(SPSR,SPIF);
+		Endpoint_Write_Byte(SPDR);
+		uart_send_ctrl_cnt(dc);
+	} while (rbytes);
+	spi_deselect();
+}
+
+void flash_spiop(uint32_t sbytes, uint32_t rbytes) {
+	spi_spiop_start(sbytes);
+	SEND(S_ACK);
+	spi_spiop_end(rbytes);
 }

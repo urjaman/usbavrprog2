@@ -19,12 +19,14 @@
  */
 
 #include "main.h"
+#include "fast-usbserial.h"
 #include "uart.h"
 #include "frser.h"
 
 
 int main(void) {
-	uart_init();
+	SetupHardware();
+	sei();
 	frser_main();
 }
 

@@ -18,19 +18,22 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/* UART MODULE HEADER */
-uint8_t uart_isdata(void);
 uint8_t uart_recv(void);
 void uart_send(uint8_t val);
-void uart_init(void);
 void uart_wait_txdone(void);
 
-/* We assume to other half to be perfect.... */
-#define BAUD_TOL 3
+/* These can be used to go behind the scenes with the USB "uart". */
+uint8_t uart_isdata(void);
+uint8_t uart_send_getfree(void);
+void uart_recv_ctrl_cnt(uint8_t b);
+void uart_send_ctrl_cnt(uint8_t b);
+
+
 
 #define RECEIVE() uart_recv()
 #define SEND(n) uart_send(n)
 #define UART_BUFLEN 1024
-/* Compat; Int Tx support was stripped. */
 #define UART_POLLED_TX
 #define UARTTX_BUFLEN 0
+/* Fake, roughly USB 1.1 bandwidth. */
+#define BAUD 8000000

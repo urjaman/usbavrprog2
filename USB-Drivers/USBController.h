@@ -53,7 +53,7 @@
 		#include <avr/io.h>
 		#include <avr/interrupt.h>
 		#include <stdbool.h>
-
+		#include "main.h"
 		#include "USBMode.h"
 
 		#include "Common-Common.h"
@@ -78,9 +78,10 @@
 			#error Do not include this file directly. Include LUFA/Drivers/USB/USB.h instead.
 		#endif
 
-		#if !defined(F_CLOCK)
+		#if !defined(F_CPU)
 			#error F_CLOCK is not defined. You must define F_CLOCK to the frequency of the unprescaled input clock in your project makefile.
 		#endif
+		#define F_CLOCK F_CPU
 
 		#if (F_CLOCK == 8000000)
 			#if (defined(__AVR_AT90USB82__) || defined(__AVR_AT90USB162__) || \

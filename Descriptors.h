@@ -41,7 +41,7 @@
 
 		#include "USB.h"
 		#include "SimpleCDC.h"
-		
+
 	/* Product-specific definitions: */
 		#define ARDUINO_UNO_PID				0x0001
 		#define ARDUINO_MEGA2560_PID		0x0010
@@ -61,11 +61,11 @@
 
 		/** Size in bytes of the CDC data IN and OUT endpoints. */
 		#define CDC_OUT_EPSIZE                32
-		#define CDC_IN_EPSIZE                64
+		#define CDC_IN_EPSIZE                32
 
 		#define CDC_CONTROL_EPNUM		0
 
-		#define CDC_OUT_DBLBANK	0
+		#define CDC_OUT_DBLBANK	1
 		#define CDC_IN_DBLBANK 1
 
 		#define CDC_NOTIFICATION_DBLBANK 0

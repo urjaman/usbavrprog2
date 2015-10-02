@@ -140,7 +140,7 @@
 		#endif
 
 		/* Function Prototypes: */
-			void USB_Device_ProcessControlRequest(void);
+			void USB_Device_ProcessControlRequest(void) __attribute__((noinline));
 
 			#if defined(__INCLUDE_FROM_DEVICESTDREQ_C)
 				static void USB_Device_SetAddress(void);
