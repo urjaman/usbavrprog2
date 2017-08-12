@@ -1,4 +1,4 @@
-frser-spi-u2
+usbavrprog2
 ===========
 
 TODO

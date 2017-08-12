@@ -3,7 +3,7 @@
 
 /* What kind of buses your flasher supports. I assume if it can LPC it can FWH too. */
 /* You can override that with FORCE_BUSTYPE if you cant (weirdo hardware duuude :P) */
-//#define FRSER_FEAT_PARALLEL
+#define FRSER_FEAT_PARALLEL
 //#define FRSER_FEAT_LPCFWH
 #define FRSER_FEAT_SPI
 
@@ -19,10 +19,10 @@
 //#define FRSER_FEAT_DBG_CONSOLE
 
 /* Name provided to flashrom to identify what the thing is. Max 16 bytes */
-#define FRSER_NAME "frser-spi-u2"
+#define FRSER_NAME "AT90USB :)"
 
 /* Attached address lines, only if FRSER_FEAT_PARALLEL */
-//#define FRSER_PARALLEL_BITS 19
+#define FRSER_PARALLEL_BITS 19
 
 /* Ability to set SPI frequency (only if SPI). */
 #define FRSER_FEAT_SPISPEED

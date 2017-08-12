@@ -1,6 +1,4 @@
 ##
-## This file is part of the frser-duino project.
-##
 ## Copyright (C) 2010,2011,2015 Urja Rannikko <urjaman@gmail.com>
 ##
 ## This program is free software; you can redistribute it and/or modify
@@ -13,20 +11,16 @@
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
 ##
-## You should have received a copy of the GNU General Public License
-## along with this program; if not, write to the Free Software
-## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
-##
 
-PROJECT=frser-spi-u2
-DEPS=uart.h main.h Makefile
+PROJECT=usbavrprog2
+DEPS=uart.h main.h flash.h parallel.h Makefile
 
-SOURCES=main.c spihw.c Descriptors.c fast-usbserial.c USB-Drivers/ConfigDescriptor.c USB-Drivers/DeviceStandardReq.c USB-Drivers/Events.c USB-Drivers/USBController.c USB-Drivers/USBTask.c USB-Drivers/Device.c USB-Drivers/Endpoint.c USB-Drivers/SimpleCDC.c USB-Drivers/USBInterrupt.c
+SOURCES=main.c flash.c spihw.c parallel.c Descriptors.c fast-usbserial.c USB-Drivers/ConfigDescriptor.c USB-Drivers/DeviceStandardReq.c USB-Drivers/Events.c USB-Drivers/USBController.c USB-Drivers/USBTask.c USB-Drivers/Device.c USB-Drivers/Endpoint.c USB-Drivers/SimpleCDC.c USB-Drivers/USBInterrupt.c
 
 CC=avr-gcc
 LD=avr-ld
 OBJCOPY=avr-objcopy
-MMCU=atmega16u2
+MMCU=at90usb1287
 
 AVRDUDECMD=avrdude -c avrispmkii -p m16u2 -P usb
 
@@ -46,8 +40,6 @@ LUFA_OPTS += -D USE_STATIC_OPTIONS="(USB_DEVICE_OPT_FULLSPEED | USB_OPT_REG_ENAB
 CFLAGS += $(LUFA_OPTS)
 
 include libfrser/Makefile.frser
-include libfrser/Makefile.spihw_avrspi
-
 
 all: $(PROJECT).out
 
