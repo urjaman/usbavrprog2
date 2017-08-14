@@ -20,6 +20,8 @@
 
 
 int main(void) {
+	CLKPR = _BV(CLKPCE);
+	CLKPR = 0; // TODO: 3.3V support
 	SetupHardware();
 	spi_init();
 	sei();
