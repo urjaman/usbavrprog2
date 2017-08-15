@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010,2011 Urja Rannikko <urjaman@gmail.com>
+ * Copyright (C) 2010,2011.2017 Urja Rannikko <urjaman@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,10 +18,10 @@ void uart_wait_txdone(void);
 
 /* These can be used to go behind the scenes with the USB "uart". */
 uint8_t uart_isdata(void);
-uint8_t uart_send_getfree(void);
-void uart_recv_ctrl_cnt(uint8_t b);
-void uart_send_ctrl_cnt(uint8_t b);
+uint8_t uart_bulkrecv();
 
+uint8_t uart_send_getfree(void);
+void uart_bulksend(uint8_t d);
 
 
 #define RECEIVE() uart_recv()

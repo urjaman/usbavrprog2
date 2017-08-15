@@ -72,14 +72,12 @@ void flash_spiop(uint32_t sbytes, uint32_t rbytes) {
 				rxc = uart_isdata();
 			} while (!rxc);
 			if (rxc > sbytes) rxc = sbytes;
-			uint8_t dc = rxc;
+			sbytes -= rxc;
 			do {
 				UCSR1A = _BV(TXC1);
-				UDR1 = Endpoint_Read_Byte();
+				UDR1 = uart_bulkrecv();
 				loop_until_bit_is_set(UCSR1A, UDRE1);
 			} while(--rxc);
-			uart_recv_ctrl_cnt(dc);
-			sbytes -= dc;
 		} while (sbytes);
 		loop_until_bit_is_set(UCSR1A, TXC1);
 	}
@@ -90,17 +88,16 @@ void flash_spiop(uint32_t sbytes, uint32_t rbytes) {
 			UDR1 = 0xFF;
 			uint8_t txc = uart_send_getfree();
 			if (txc > rbytes) txc = rbytes;
-			uint8_t dc = txc;
+			rbytes -= txc;
 			txc--;
 			if (txc) do {
 				loop_until_bit_is_set(UCSR1A, RXC1);
-				Endpoint_Write_Byte(UDR1);
+				uint8_t d = UDR1;
 				UDR1 = 0xFF;
+				uart_bulksend(d);
 			} while (--txc);
-			rbytes -= dc;
 			loop_until_bit_is_set(UCSR1A, RXC1);
-			Endpoint_Write_Byte(UDR1);
-			uart_send_ctrl_cnt(dc);
+			uart_bulksend(UDR1);
 		} while (rbytes);
 	}
 	_delay_us(1);

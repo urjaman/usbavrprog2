@@ -55,18 +55,23 @@ static void* parallel_setaddr(uint32_t addr) {
 void parallel_readn(uint32_t addr, uint32_t len) {
 	void *m = parallel_setaddr(addr);
 	do {
-		uint8_t d;
-		asm (
-			"out %2, %A0"	"\n\t"
-			"ld %1, %a0+"	"\n\t"
-			: "=e" (m), "=r" (d) : "I" (_SFR_IO_ADDR(PORTB)), "0" (m)
-		);
-		SEND(d);
-		if (!m) {
-			addr = (addr & ~0x7FFF) + 0x8000;
-			m = parallel_setaddr(addr);
-		}
-	} while(--len);
+		uint8_t txc = uart_send_getfree();
+		if (txc > len) txc = len;
+		len -= txc;
+		do {
+			uint8_t d;
+			asm (
+				"out %2, %A0"	"\n\t"
+				"ld %1, %a0+"	"\n\t"
+				: "=e" (m), "=r" (d) : "I" (_SFR_IO_ADDR(PORTB)), "0" (m)
+			);
+			uart_bulksend(d);
+			if (!m) {
+				addr = (addr & ~0x7FFF) + 0x8000;
+				m = parallel_setaddr(addr);
+			}
+		} while (--txc);
+	} while (len);
 }
 
 uint8_t parallel_read(uint32_t addr) {
