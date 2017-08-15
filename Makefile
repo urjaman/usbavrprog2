@@ -22,7 +22,7 @@ LD=avr-ld
 OBJCOPY=avr-objcopy
 MMCU=at90usb1287
 
-AVRDUDECMD=avrdude -c atmelice_isp -p usb1287
+AVRDUDECMD=avrdude -c atmelice -p usb1287
 
 #AVRBINDIR=/usr/avr/bin/
 

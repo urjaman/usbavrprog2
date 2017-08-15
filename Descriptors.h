@@ -32,7 +32,7 @@
  *
  *  Header file for Descriptors.c.
  */
- 
+
 #ifndef _DESCRIPTORS_H_
 #define _DESCRIPTORS_H_
 
@@ -42,12 +42,6 @@
 		#include "USB.h"
 		#include "SimpleCDC.h"
 
-	/* Product-specific definitions: */
-		#define ARDUINO_UNO_PID				0x0001
-		#define ARDUINO_MEGA2560_PID		0x0010
-
-	/* Macros: */
-		/** Endpoint number of the CDC device-to-host notification IN endpoint. */
 		#define CDC_NOTIFICATION_EPNUM         2
 
 		/** Endpoint number of the CDC device-to-host data IN endpoint. */
@@ -56,12 +50,10 @@
 		/** Endpoint number of the CDC host-to-device data OUT endpoint. */
 		#define CDC_RX_EPNUM                   4
 
-		/** Size in bytes of the CDC device-to-host notification IN endpoint. */
 		#define CDC_NOTIFICATION_EPSIZE        8
 
-		/** Size in bytes of the CDC data IN and OUT endpoints. */
-		#define CDC_OUT_EPSIZE                32
-		#define CDC_IN_EPSIZE                32
+		#define CDC_OUT_EPSIZE                64
+		#define CDC_IN_EPSIZE                64
 
 		#define CDC_CONTROL_EPNUM		0
 
