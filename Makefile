@@ -43,6 +43,8 @@ include libfrser/Makefile.frser
 
 all: $(PROJECT).out
 
+include ciface/Makefile.ciface
+
 $(PROJECT).hex: $(PROJECT).out
 	$(AVRBINDIR)$(OBJCOPY) -j .text -j .data -O ihex $(PROJECT).out $(PROJECT).hex
 

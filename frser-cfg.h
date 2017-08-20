@@ -16,7 +16,7 @@
 /* If your system is capable of turning on/off chip drivers. */
 #define FRSER_FEAT_PIN_STATE
 /* If you have a debug console you'd want frser to call upon space bar. */
-//#define FRSER_FEAT_DBG_CONSOLE
+#define FRSER_FEAT_DBG_CONSOLE
 
 /* Name provided to flashrom to identify what the thing is. Max 16 bytes */
 #define FRSER_NAME "AT90USB :)"

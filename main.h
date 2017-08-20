@@ -14,3 +14,4 @@
 #include <alloca.h>
 #include <inttypes.h>
 #include <setjmp.h>
+#include "ciface.h"

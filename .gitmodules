@@ -1,3 +1,6 @@
 [submodule "libfrser"]
 	path = libfrser
 	url = https://github.com/urjaman/libfrser.git
+[submodule "ciface"]
+	path = ciface
+	url = https://github.com/urjaman/ciface.git
