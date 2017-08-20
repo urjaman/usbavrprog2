@@ -53,24 +53,33 @@ static void* parallel_setaddr(uint32_t addr) {
 }
 
 void parallel_readn(uint32_t addr, uint32_t len) {
-	void *m = parallel_setaddr(addr);
 	do {
-		uint8_t txc = uart_send_getfree();
-		if (txc > len) txc = len;
-		len -= txc;
+		volatile uint8_t *m = parallel_setaddr(addr);
+		uint16_t chunkl = 0x8000 - (addr & 0x7FFF);
+		if (chunkl > len) chunkl = len;
+		len -= chunkl;
+		addr += chunkl;
 		do {
-			uint8_t d;
-			asm (
-				"out %2, %A0"	"\n\t"
-				"ld %1, %a0+"	"\n\t"
-				: "=e" (m), "=r" (d) : "I" (_SFR_IO_ADDR(PORTB)), "0" (m)
-			);
-			uart_bulksend(d);
-			if (!m) {
-				addr = (addr & ~0x7FFF) + 0x8000;
-				m = parallel_setaddr(addr);
-			}
-		} while (--txc);
+			uint8_t txc = uart_send_getfree();
+			if (txc > chunkl) txc = chunkl;
+			chunkl -= txc;
+			do {
+				uint8_t d;
+#if 0
+				/* Here the compiler doesnt use Z+ */
+				PORTB = ((uint16_t)m) & 0xFF;
+				d = *m++;
+#else
+				/* Here it does unnecessary movw to/from X in the loop. */
+				asm (
+					"out %2, %A0"	"\n\t"
+					"ld %1, %a0+"	"\n\t"
+					: "=e" (m), "=r" (d) : "I" (_SFR_IO_ADDR(PORTB)), "0" (m)
+				);
+#endif
+				uart_bulksend(d);
+			} while (--txc);
+		} while (chunkl);
 	} while (len);
 }
 
