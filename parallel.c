@@ -45,7 +45,6 @@ void parallel_safe(void) {
 	DDRE = 0;
 }
 
-
 static void* parallel_setaddr(uint32_t addr) {
 	PORTC = ((uint16_t)addr >> 8) & 0xFF;
 	PORTE = (PORTE & 0x8F) | (((addr >> 16) & 0x7) << 4);
@@ -64,41 +63,21 @@ void parallel_readn(uint32_t addr, uint32_t len) {
 			if (txc > chunkl) txc = chunkl;
 			chunkl -= txc;
 			do {
-				uint8_t d;
-#if 0
-				/* Here the compiler doesnt use Z+ */
 				PORTB = ((uint16_t)m) & 0xFF;
-				d = *m++;
-#else
-				/* Here it does unnecessary movw to/from X in the loop. */
-				asm (
-					"out %2, %A0"	"\n\t"
-					"ld %1, %a0+"	"\n\t"
-					: "=e" (m), "=r" (d) : "I" (_SFR_IO_ADDR(PORTB)), "0" (m)
-				);
-#endif
-				uart_bulksend(d);
+				uart_bulksend(*m++);
 			} while (--txc);
 		} while (chunkl);
 	} while (len);
 }
 
 uint8_t parallel_read(uint32_t addr) {
-	void *m = parallel_setaddr(addr);
-	uint8_t d;
-	asm (
-		"out %2, %A0"	"\n\t"
-		"ld %1, %a0+"	"\n\t"
-		: "=e" (m), "=r" (d) : "I" (_SFR_IO_ADDR(PORTB)), "0" (m)
-	);
-	return d;
+	volatile uint8_t *m = parallel_setaddr(addr);
+	PORTB = ((uint16_t)m) & 0xFF;
+	return *m;
 }
 
 void parallel_write(uint32_t addr, uint8_t data) {
-	void *m = parallel_setaddr(addr);
-	asm volatile (
-		"out %2, %A0"	"\n\t"
-		"st %a0+, %1"	"\n\t"
-		: "=e" (m) : "r" (data),  "I" (_SFR_IO_ADDR(PORTB)), "0" (m)
-	);
+	volatile uint8_t *m = parallel_setaddr(addr);
+	PORTB = ((uint16_t)m) & 0xFF;
+	*m = data;
 }
