@@ -35,21 +35,40 @@ static void adc_off(void) {
 	ADCSRA = 0;
 }
 
-static uint16_t measure_vspi(void) {
+static uint16_t adc_bigsample(uint8_t mux, uint8_t ss) {
 	adc_init(); //fixme
-	ADMUX = _BV(REFS1) | _BV(REFS0); // ADC0 w/ 2.56V ref
+	ADMUX = mux; // ADC0 w/ 2.56V ref
 	/* Discard 2 samples during init. */
 	adc_sample();
 	adc_sample();
 	uint16_t r = 0;
-	for (uint8_t i=0; i<5*4; i++) r += adc_sample();
+	for (uint8_t i=0; i<ss; i++) r += adc_sample();
+	return r;
+}
+
+static uint16_t measure_vspi(void) {
+	// ADC0 w/ 2.56V ref
+	uint16_t r = adc_bigsample(_BV(REFS1) | _BV(REFS0), 5*4);
 	adc_off();
 	/* Result is in mV (3300 = 3.3V) */
-	return r/4;
+	return (r+2)/4;
+}
+
+static uint16_t measure_vcc(void) {
+	// 1.1V BG w/ AVCC ref
+	uint16_t r = (adc_bigsample(_BV(REFS0) | 0b11110, 4*4)+2)/4;
+	adc_off();
+	// 1.1 * 1024 * 1000 * 4
+	return (4505600UL+(r/2)) / r;
 }
 
 CIFACE_APP(vspi_cmd, "VSPI")
 {
 	luint2outdual(measure_vspi());
+}
+
+CIFACE_APP(vcc_cmd, "VCC")
+{
+	luint2outdual(measure_vcc());
 }
 
