@@ -31,7 +31,7 @@ static uint16_t adc_sample(void) {
 }
 
 static void adc_off(void) {
-	ADMUX = _BV(REFS1) | _BV(REFS0);
+	ADMUX = 0;
 	ADCSRA = 0;
 }
 
@@ -58,6 +58,8 @@ static uint16_t measure_vcc(void) {
 	// 1.1V BG w/ AVCC ref
 	uint16_t r = (adc_bigsample(_BV(REFS0) | 0b11110, 4*4)+2)/4;
 	adc_off();
+	/* This measurement fruks up VSPI measurements, so flush a little. */
+	for (uint8_t i=0;i<5;i++) measure_vspi();
 	// 1.1 * 1024 * 1000 * 4
 	return (4505600UL+(r/2)) / r;
 }
