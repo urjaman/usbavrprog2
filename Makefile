@@ -1,5 +1,5 @@
 ##
-## Copyright (C) 2010,2011,2015 Urja Rannikko <urjaman@gmail.com>
+## Copyright (C) 2010,2011,2015,2017 Urja Rannikko <urjaman@gmail.com>
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -13,9 +13,9 @@
 ##
 
 PROJECT=usbavrprog2
-DEPS=uart.h main.h flash.h parallel.h Makefile
+DEPS=uart.h main.h flash.h parallel.h adc.h Makefile
 
-SOURCES=main.c flash.c spihw.c parallel.c cmds.c Descriptors.c fast-usbserial.c USB-Drivers/ConfigDescriptor.c USB-Drivers/DeviceStandardReq.c USB-Drivers/Events.c USB-Drivers/USBController.c USB-Drivers/USBTask.c USB-Drivers/Device.c USB-Drivers/Endpoint.c USB-Drivers/SimpleCDC.c USB-Drivers/USBInterrupt.c
+SOURCES=main.c flash.c spihw.c parallel.c adc.c cmds.c Descriptors.c fast-usbserial.c USB-Drivers/ConfigDescriptor.c USB-Drivers/DeviceStandardReq.c USB-Drivers/Events.c USB-Drivers/USBController.c USB-Drivers/USBTask.c USB-Drivers/Device.c USB-Drivers/Endpoint.c USB-Drivers/SimpleCDC.c USB-Drivers/USBInterrupt.c
 CMD_SOURCES=cmds.c
 
 CC=avr-gcc

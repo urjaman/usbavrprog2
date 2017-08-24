@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Urja Rannikko <urjaman@gmail.com>
+ * Copyright (C) 2010,2017 Urja Rannikko <urjaman@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,11 +17,12 @@
 #include "uart.h"
 #include "frser.h"
 #include "spihw.h"
-
+#include "adc.h"
 
 int main(void) {
 	CLKPR = _BV(CLKPCE);
 	CLKPR = 0; // TODO: 3.3V support
+	adc_init();
 	SetupHardware();
 	spi_init();
 	sei();
