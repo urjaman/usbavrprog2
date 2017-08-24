@@ -1,6 +1,5 @@
 /* Define what our hardware is. */
 
-
 #define SPI_PORT	PORTD
 #define SCK		PORTD5
 #define MISO		PORTD2
@@ -21,3 +20,7 @@ void spi_init();
 
 void spi_enable();
 void spi_disable();
+
+uint8_t spi_txrx(uint8_t d);
+void spi_hw_off(void);
+void spi_hw_on(void);

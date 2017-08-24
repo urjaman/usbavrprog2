@@ -31,7 +31,7 @@ static uint16_t adc_sample(void) {
 }
 
 static void adc_off(void) {
-	ADMUX = 0;
+	ADMUX = _BV(REFS1) | _BV(REFS0);
 	ADCSRA = 0;
 }
 
@@ -70,5 +70,57 @@ CIFACE_APP(vspi_cmd, "VSPI")
 CIFACE_APP(vcc_cmd, "VCC")
 {
 	luint2outdual(measure_vcc());
+}
+
+CIFACE_APP(spitest_cmd, "SPILOOP")
+{
+	spi_enable();
+	spi_hw_on();
+	luint2outdual(spi_txrx(0xA5));
+	luint2outdual(spi_txrx(0x5A));
+	luint2outdual(spi_txrx(0xDB));
+}
+
+static void spi_override(uint8_t set, uint8_t clear)
+{
+	spi_enable();
+	spi_hw_off();
+	SPI_PORT = (SPI_PORT & ~clear) | set;
+}
+
+CIFACE_APP(cs0_cmd, "CS0")
+{
+	spi_override(0, _BV(SS));
+}
+
+CIFACE_APP(cs1_cmd, "CS1")
+{
+	spi_override( _BV(SS), 0);
+}
+
+CIFACE_APP(sck0_cmd, "SCK0")
+{
+	spi_override(0, _BV(SCK));
+}
+
+CIFACE_APP(sck1_cmd, "SCK1")
+{
+	spi_override(_BV(SCK), 0);
+}
+
+
+CIFACE_APP(mosi0_cmd, "MOSI0")
+{
+	spi_override(0, _BV(MOSI));
+}
+
+CIFACE_APP(mosi1_cmd, "MOSI1")
+{
+	spi_override(_BV(MOSI), 0);
+}
+
+CIFACE_APP(miso_cmd, "MISO")
+{
+	sendstr_P( (PIND & _BV(MISO)) ? PSTR("1") : PSTR("0") );
 }
 

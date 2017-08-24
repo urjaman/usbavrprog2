@@ -52,13 +52,18 @@ void spi_enable(void) {
 	SPI_PORT &= ~_BV(SPI_EN);
 }
 
+/* For init and testing. */
+void spi_hw_on(void) {
+	UCSR1C = _BV(UMSEL11)|_BV(UMSEL10);
+	UBRR1 = 3; /* Default to 2Mhz */
+	UCSR1B = _BV(TXEN1)|_BV(RXEN1);
+}
+
 /* This initialises the SPI / UART MSPIM etc on boot. */
 void spi_init(void) {
 	SPI_PORT = _BV(SS) | _BV(MISO) | _BV(SPI_WP) | _BV(SPI_HOLD) | _BV(SPI_EN);
 	DDR_SPI = _BV(MOSI) | _BV(SCK) | _BV(SS) | _BV(SPI_EN);
-	UCSR1C = _BV(UMSEL11)|_BV(UMSEL10);
-	UBRR1 = 3; /* Default to 2Mhz */
-	UCSR1B = _BV(TXEN1)|_BV(RXEN1);
+	spi_hw_on();
 }
 
 void flash_spiop(uint32_t sbytes, uint32_t rbytes) {
@@ -103,4 +108,17 @@ void flash_spiop(uint32_t sbytes, uint32_t rbytes) {
 	_delay_us(1);
 	spi_deselect();
 	_delay_us(1);
+}
+
+/* These are for testing cmd purposes. */
+void spi_hw_off(void) {
+	UCSR1B = 0;
+	UCSR1C = 0;
+}
+
+uint8_t spi_txrx(uint8_t d) {
+	UCSR1B = _BV(TXEN1)|_BV(RXEN1);
+	UDR1 = d;
+	loop_until_bit_is_set(UCSR1A, RXC1);
+	return UDR1;
 }
