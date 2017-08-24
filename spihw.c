@@ -103,8 +103,8 @@ void flash_spiop(uint32_t sbytes, uint32_t rbytes)
 			txc--;
 			if (txc) do {
 					loop_until_bit_is_set(UCSR1A, RXC1);
-					uint8_t d = UDR1;
 					UDR1 = 0xFF;
+					uint8_t d = UDR1;
 					uart_bulksend(d);
 				} while (--txc);
 			loop_until_bit_is_set(UCSR1A, RXC1);

@@ -21,6 +21,7 @@ uint8_t uart_isdata(void);
 uint8_t uart_bulkrecv();
 
 uint8_t uart_send_getfree(void);
+uint8_t uart_send_getfree_noblock(void);
 void uart_bulksend(uint8_t d);
 
 

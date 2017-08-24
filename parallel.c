@@ -70,7 +70,8 @@ void parallel_readn(uint32_t addr, uint32_t len)
 			chunkl -= txc;
 			do {
 				PORTB = ((uint16_t)m) & 0xFF;
-				uart_bulksend(*m++);
+				uint8_t d = *m++;
+				uart_bulksend(d);
 			} while (--txc);
 		} while (chunkl);
 	} while (len);

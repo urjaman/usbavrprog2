@@ -106,19 +106,35 @@ uint8_t uart_bulkrecv(void)
 	return Endpoint_Read_Byte();
 }
 
+
+uint8_t uart_send_getfree_noblock(void)
+{
+	Endpoint_SelectEndpoint(CDC_TX_EPNUM);
+	uint8_t s = UEINTX;
+	if (s & _BV(RWAL)) {
+		return CDC_IN_EPSIZE - Endpoint_BytesInEndpoint();
+	}
+	/* Flush */
+	UEINTX = s & ~((1 << TXINI) | (1 << FIFOCON));
+
+	/* Look once again. */
+	s = UEINTX;
+	if (s & _BV(RWAL)) {
+		return CDC_IN_EPSIZE;
+	}
+	return 0;
+}
+
 uint8_t uart_send_getfree(void)
 {
 	do {
-		Endpoint_SelectEndpoint(CDC_TX_EPNUM);
-		uint8_t s = UEINTX;
-		if (s & _BV(RWAL)) {
-			return CDC_IN_EPSIZE - Endpoint_BytesInEndpoint();
-		}
-		/* Flush */
-		UEINTX = s & ~((1 << TXINI) | (1 << FIFOCON));
+		uint8_t r = uart_send_getfree_noblock();
+		if (r) return r;
 		usb_process();
 	} while(1);
 }
+
+
 
 void uart_bulksend(uint8_t d)
 {

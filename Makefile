@@ -27,7 +27,7 @@ AVRDUDECMD=avrdude -c atmelice -p usb1287
 
 #AVRBINDIR=/usr/avr/bin/
 
-CFLAGS=-mmcu=$(MMCU) -Os -Wl,--relax -fno-inline-small-functions -fno-tree-switch-conversion -frename-registers -g -Wall -W -pipe -flto -fwhole-program -std=gnu99 $(DFLAGS)
+CFLAGS=-mmcu=$(MMCU) -Os -Wl,--relax -g -Wall -W -pipe -flto -fwhole-program -std=gnu99 $(DFLAGS)
 
 LUFA_OPTS  = -D USB_DEVICE_ONLY
 LUFA_OPTS += -D FIXED_CONTROL_ENDPOINT_SIZE=8
