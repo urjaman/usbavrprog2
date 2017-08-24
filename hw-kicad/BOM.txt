@@ -1,0 +1,25 @@
+usbavrprog2 BOM
+
+- 1 AT90USB 646/647/1286/1287
+- 1 LM3671MF-3.3
+- 1 2.2uH 0805 coil
+- 1 MCP1824T-1802E SOT23-5 1.8V regulator
+- 2 74AVC4T245D
+- 2 4x0603 (1206) 2.2k
+- 2 4x0603 10k
+- 1 4x0603 49R9
+- 1 2512 8.2ohm resistor (1.5W)
+- 2 0603 LED (or different colors)
+- 32 female pin header [1x50] 
+- 1 16Mhz XTAL
+- 1 2x05 0.05" pin header
+- 1 USB micro OTG connector 
+- 2 22R 0603
+- 1 0603 1k5
+- 2 22pF cap
+- 1 push button switch 
+- 6 10u 0805 cap
+- 1 SOD-323 0.5A diode schottky
+- 1 2x03 0.1" pin header
+- 2 10k 0603
+- (some jumpers, pin headers)

@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP AT90USB646-AU
+D 128k Flash, 4k SRAM, 4k EEPROM, JTAG, CAN, TQFP64
+K AVR 8bit Microcontroller MegaAVR
+F http://www.atmel.com/Images/doc7679.pdf
+$ENDCMP
+#
+#End Doc Library

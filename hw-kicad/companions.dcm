@@ -1,0 +1,47 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP 74AHCT1G125
+D Diodes Incorporated 74AHCT1G125SE-7
+F http://www.diodes.com/_files/datasheets/74AHCT1G125.pdf
+$ENDCMP
+#
+$CMP 74AVC4T245D
+D NXP Semiconductors 74AVC4T245D 2x2bit transceiver, 3-state
+F http://www.nxp.com/documents/data_sheet/74AVC4T245.pdf
+$ENDCMP
+#
+$CMP 74LVC8T245PW
+D NXP Semiconductors 74LVC8T245PW 8-bit transceiver, 3-state
+F http://www.nxp.com/documents/data_sheet/74LVC_LVCH8T245.pdf
+$ENDCMP
+#
+$CMP AAT3517
+D SOT-23-5 Power Monitor & Watchdog
+$ENDCMP
+#
+$CMP F535L
+D  Fox Electronics F535L SMD Oscillator
+F http://www.foxonline.com/pdfs/f530l.pdf
+$ENDCMP
+#
+$CMP KSZ8851-16MLL
+D Micrel KSZ8851 Ethernet MAC Controller with 8-Bit or 16-Bit Non-PCI Interface
+F http://ww1.microchip.com/downloads/en/DeviceDoc/ksz8851-16mll_ds.pdf
+$ENDCMP
+#
+$CMP RT8284NGS
+D Richtek USA Inc. RT8284NGS Buck Regulator
+F http://www.richtek.com/assets/product_file/RT8284/DS8284-01.pdf
+$ENDCMP
+#
+$CMP RT9728BLGE
+D Richtek USA Inc. RT9728BLGE Power Switch
+F http://www.richtek.com/assets/product_file/RT9728B/DS9728B-00.pdf
+$ENDCMP
+#
+$CMP WE749010013
+D Wurth Electronics Inc 749010013 LAN Transformer (Pulse)
+F http://katalog.we-online.de/pbs/datasheet/749010013.pdf
+$ENDCMP
+#
+#End Doc Library
