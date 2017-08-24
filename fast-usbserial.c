@@ -41,11 +41,13 @@
 USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface;
 
 static void usb_process(void) {
+	LED1(1);
 	Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
 	do {
 		if (Endpoint_IsSETUPReceived())
 		  USB_Device_ProcessControlRequest();
 	} while (USB_DeviceState != DEVICE_STATE_Configured);
+	LED1(0);
 }
 
 uint8_t uart_recv(void) {
@@ -62,7 +64,6 @@ uint8_t uart_recv(void) {
 			}
 		} while(0);
 		usb_process();
-
 		Endpoint_SelectEndpoint(CDC_TX_EPNUM);
 		if (Endpoint_BytesInEndpoint()) {
 			Endpoint_ClearIN(); /* Flush TX.. */

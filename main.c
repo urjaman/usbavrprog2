@@ -23,10 +23,20 @@ int main(void) {
 	CLKPR = _BV(CLKPCE);
 	CLKPR = 0; // TODO: 3.3V support
 	adc_init();
+	/* LEDs */
+	DDRF |= _BV(2);
+	DDRF |= _BV(3);
 	SetupHardware();
 	spi_init();
 	sei();
-	frser_main();
+	frser_init();
+	for(;;) {
+		uint8_t op;
+		op = RECEIVE();
+		LED2(1);
+		frser_operation(op);
+		LED2(0);
+	}
 }
 
 
