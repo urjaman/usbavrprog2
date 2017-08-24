@@ -45,35 +45,33 @@ void CDC_Device_Event_Stub(void)
 void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
 	if (!(Endpoint_IsSETUPReceived()))
-	  return;
+		return;
 
 	if (USB_ControlRequest.wIndex != CDC_CONTROL_EPNUM)
-	  return;
+		return;
 
-	switch (USB_ControlRequest.bRequest)
-	{
+	switch (USB_ControlRequest.bRequest) {
 		case REQ_GetLineEncoding:
-			if (USB_ControlRequest.bmRequestType == (REQDIR_DEVICETOHOST | REQTYPE_CLASS | REQREC_INTERFACE))
-			{
+			if (USB_ControlRequest.bmRequestType == (REQDIR_DEVICETOHOST | REQTYPE_CLASS | REQREC_INTERFACE)) {
 				Endpoint_ClearSETUP();
-				Endpoint_Write_Control_Stream_LE(&CDCInterfaceInfo->State.LineEncoding, sizeof(CDCInterfaceInfo->State.LineEncoding));
+				Endpoint_Write_Control_Stream_LE(&CDCInterfaceInfo->State.LineEncoding,
+				                                 sizeof(CDCInterfaceInfo->State.LineEncoding));
 				Endpoint_ClearOUT();
 			}
 
 			break;
 		case REQ_SetLineEncoding:
-			if (USB_ControlRequest.bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE))
-			{
+			if (USB_ControlRequest.bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE)) {
 				Endpoint_ClearSETUP();
-				Endpoint_Read_Control_Stream_LE(&CDCInterfaceInfo->State.LineEncoding, sizeof(CDCInterfaceInfo->State.LineEncoding));
+				Endpoint_Read_Control_Stream_LE(&CDCInterfaceInfo->State.LineEncoding,
+				                                sizeof(CDCInterfaceInfo->State.LineEncoding));
 				EVENT_CDC_Device_LineEncodingChanged(CDCInterfaceInfo);
 				Endpoint_ClearIN();
 			}
 
 			break;
 		case REQ_SetControlLineState:
-			if (USB_ControlRequest.bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE))
-			{
+			if (USB_ControlRequest.bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE)) {
 				Endpoint_ClearSETUP();
 
 				CDCInterfaceInfo->State.ControlLineStates.HostToDevice = USB_ControlRequest.wValue;
@@ -84,8 +82,7 @@ void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInter
 
 			break;
 		case REQ_SendBreak:
-			if (USB_ControlRequest.bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE))
-			{
+			if (USB_ControlRequest.bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE)) {
 				Endpoint_ClearSETUP();
 
 				Endpoint_ClearStatusStage();
@@ -102,22 +99,19 @@ bool CDC_Device_ConfigureEndpoints(USB_ClassInfo_CDC_Device_t* const CDCInterfac
 
 	if (!(Endpoint_ConfigureEndpoint(CDC_NOTIFICATION_EPNUM, EP_TYPE_INTERRUPT,
 	                                 ENDPOINT_DIR_IN, CDC_NOTIFICATION_EPSIZE,
-	                                 CDC_NOTIFICATION_DBLBANK ? ENDPOINT_BANK_DOUBLE : ENDPOINT_BANK_SINGLE)))
-	{
+	                                 CDC_NOTIFICATION_DBLBANK ? ENDPOINT_BANK_DOUBLE : ENDPOINT_BANK_SINGLE))) {
 		return false;
 	}
 
 	if (!(Endpoint_ConfigureEndpoint(CDC_TX_EPNUM, EP_TYPE_BULK,
-							         ENDPOINT_DIR_IN, CDC_IN_EPSIZE,
-							         CDC_IN_DBLBANK ? ENDPOINT_BANK_DOUBLE : ENDPOINT_BANK_SINGLE)))
-	{
+	                                 ENDPOINT_DIR_IN, CDC_IN_EPSIZE,
+	                                 CDC_IN_DBLBANK ? ENDPOINT_BANK_DOUBLE : ENDPOINT_BANK_SINGLE))) {
 		return false;
 	}
 
 	if (!(Endpoint_ConfigureEndpoint(CDC_RX_EPNUM, EP_TYPE_BULK,
 	                                 ENDPOINT_DIR_OUT, CDC_OUT_EPSIZE,
-	                                 CDC_OUT_DBLBANK ? ENDPOINT_BANK_DOUBLE : ENDPOINT_BANK_SINGLE)))
-	{
+	                                 CDC_OUT_DBLBANK ? ENDPOINT_BANK_DOUBLE : ENDPOINT_BANK_SINGLE))) {
 		return false;
 	}
 
@@ -129,12 +123,11 @@ bool CDC_Device_ConfigureEndpoints(USB_ClassInfo_CDC_Device_t* const CDCInterfac
 uint8_t CDC_Device_SendByte_Prep(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
 	if (!(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS))
-	  return ENDPOINT_RWSTREAM_DeviceDisconnected;
+		return ENDPOINT_RWSTREAM_DeviceDisconnected;
 
 	Endpoint_SelectEndpoint(CDC_TX_EPNUM);
 
-	if (!(Endpoint_IsReadWriteAllowed()))
-	{
+	if (!(Endpoint_IsReadWriteAllowed())) {
 		Endpoint_ClearIN();
 		return ENDPOINT_READYWAIT_Timeout;
 	}
@@ -146,24 +139,18 @@ uint8_t CDC_Device_SendByte_Prep(USB_ClassInfo_CDC_Device_t* const CDCInterfaceI
 uint8_t CDC_Device_BytesReceived(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
 	if (!(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS))
-	  return 0;
+		return 0;
 
 	Endpoint_SelectEndpoint(CDC_RX_EPNUM);
 
-	if (Endpoint_IsOUTReceived())
-	{
-		if (!(Endpoint_BytesInEndpoint()))
-		{
+	if (Endpoint_IsOUTReceived()) {
+		if (!(Endpoint_BytesInEndpoint())) {
 			Endpoint_ClearOUT();
 			return 0;
-		}
-		else
-		{
+		} else {
 			return Endpoint_BytesInEndpoint();
 		}
-	}
-	else
-	{
+	} else {
 		return 0;
 	}
 }
@@ -174,19 +161,18 @@ uint8_t CDC_Device_BytesReceived(USB_ClassInfo_CDC_Device_t* const CDCInterfaceI
 int16_t CDC_Device_ReceiveByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
 	if (!(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS))
-	  return -1;
+		return -1;
 
 	int16_t ReceivedByte = -1;
 
 	Endpoint_SelectEndpoint(CDC_RX_EPNUM);
 
-	if (Endpoint_IsOUTReceived())
-	{
+	if (Endpoint_IsOUTReceived()) {
 		if (Endpoint_BytesInEndpoint())
-		  ReceivedByte = Endpoint_Read_Byte();
+			ReceivedByte = Endpoint_Read_Byte();
 
 		if (!(Endpoint_BytesInEndpoint()))
-		  Endpoint_ClearOUT();
+			Endpoint_ClearOUT();
 	}
 
 	return ReceivedByte;

@@ -21,7 +21,8 @@
 #include "flash.h"
 
 #ifdef FRSER_FEAT_SPISPEED
-uint32_t spi_set_speed(uint32_t hz) {
+uint32_t spi_set_speed(uint32_t hz)
+{
 	uint8_t spi_set_ubrr = 0;
 	/* Range check. */
 	if (hz>(F_CPU/2)) {
@@ -42,31 +43,36 @@ uint32_t spi_set_speed(uint32_t hz) {
 #endif
 
 /* These control the external drivers. */
-void spi_disable(void) {
+void spi_disable(void)
+{
 	SPI_PORT |= _BV(SPI_EN);
 	DDR_SPI &= ~_BV(SPI_XBUF);
 }
 
-void spi_enable(void) {
+void spi_enable(void)
+{
 	DDR_SPI |= _BV(SPI_XBUF);
 	SPI_PORT &= ~_BV(SPI_EN);
 }
 
 /* For init and testing. */
-void spi_hw_on(void) {
+void spi_hw_on(void)
+{
 	UCSR1C = _BV(UMSEL11)|_BV(UMSEL10);
 	UBRR1 = 3; /* Default to 2Mhz */
 	UCSR1B = _BV(TXEN1)|_BV(RXEN1);
 }
 
 /* This initialises the SPI / UART MSPIM etc on boot. */
-void spi_init(void) {
+void spi_init(void)
+{
 	SPI_PORT = _BV(SS) | _BV(MISO) | _BV(SPI_WP) | _BV(SPI_HOLD) | _BV(SPI_EN);
 	DDR_SPI = _BV(MOSI) | _BV(SCK) | _BV(SS) | _BV(SPI_EN);
 	spi_hw_on();
 }
 
-void flash_spiop(uint32_t sbytes, uint32_t rbytes) {
+void flash_spiop(uint32_t sbytes, uint32_t rbytes)
+{
 	spi_select();
 	_delay_us(1);
 	if (sbytes) {
@@ -96,11 +102,11 @@ void flash_spiop(uint32_t sbytes, uint32_t rbytes) {
 			rbytes -= txc;
 			txc--;
 			if (txc) do {
-				loop_until_bit_is_set(UCSR1A, RXC1);
-				uint8_t d = UDR1;
-				UDR1 = 0xFF;
-				uart_bulksend(d);
-			} while (--txc);
+					loop_until_bit_is_set(UCSR1A, RXC1);
+					uint8_t d = UDR1;
+					UDR1 = 0xFF;
+					uart_bulksend(d);
+				} while (--txc);
 			loop_until_bit_is_set(UCSR1A, RXC1);
 			uart_bulksend(UDR1);
 		} while (rbytes);
@@ -111,12 +117,14 @@ void flash_spiop(uint32_t sbytes, uint32_t rbytes) {
 }
 
 /* These are for testing cmd purposes. */
-void spi_hw_off(void) {
+void spi_hw_off(void)
+{
 	UCSR1B = 0;
 	UCSR1C = 0;
 }
 
-uint8_t spi_txrx(uint8_t d) {
+uint8_t spi_txrx(uint8_t d)
+{
 	UCSR1B = _BV(TXEN1)|_BV(RXEN1);
 	UDR1 = d;
 	loop_until_bit_is_set(UCSR1A, RXC1);

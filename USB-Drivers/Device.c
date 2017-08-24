@@ -37,8 +37,7 @@
 
 void USB_Device_SendRemoteWakeup(void)
 {
-	if (!(USB_Options & USB_OPT_MANUAL_PLL))
-	{
+	if (!(USB_Options & USB_OPT_MANUAL_PLL)) {
 		USB_PLL_On();
 		while (!(USB_PLL_IsReady()));
 	}

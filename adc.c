@@ -15,22 +15,26 @@
 #include "main.h"
 #include "adc.h"
 
-void adc_init(void) {
+void adc_init(void)
+{
 	DIDR0 = _BV(ADC0D);
 }
 
-static uint16_t adc_sample(void) {
+static uint16_t adc_sample(void)
+{
 	ADCSRA = _BV(ADEN) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0) | _BV(ADSC);
 	while (ADCSRA & _BV(ADSC));
 	return ADC;
 }
 
-static void adc_off(void) {
+static void adc_off(void)
+{
 	ADMUX = 0;
 	ADCSRA = 0;
 }
 
-static uint16_t adc_bigsample(uint8_t mux, uint8_t ss) {
+static uint16_t adc_bigsample(uint8_t mux, uint8_t ss)
+{
 	ADMUX = mux; // ADC0 w/ 2.56V ref
 	/* Discard 2 samples during init. */
 	adc_sample();
@@ -40,7 +44,8 @@ static uint16_t adc_bigsample(uint8_t mux, uint8_t ss) {
 	return r;
 }
 
-uint16_t measure_vspi(void) {
+uint16_t measure_vspi(void)
+{
 	// ADC0 w/ 2.56V ref
 	uint16_t r = adc_bigsample(_BV(REFS1) | _BV(REFS0), 5*4);
 	adc_off();
@@ -48,12 +53,13 @@ uint16_t measure_vspi(void) {
 	return (r+2)/4;
 }
 
-uint16_t measure_vcc(void) {
+uint16_t measure_vcc(void)
+{
 	// 1.1V BG w/ AVCC ref
 	uint16_t r = (adc_bigsample(_BV(REFS0) | 0b11110, 4*4)+2)/4;
 	adc_off();
 	/* This measurement fruks up VSPI measurements, so flush a "little". */
-	for (uint8_t i=0;i<5;i++) measure_vspi();
+	for (uint8_t i=0; i<5; i++) measure_vspi();
 	// 1.1 * 1024 * 1000 * 4
 	return (4505600UL+(r/2)) / r;
 }

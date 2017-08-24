@@ -40,17 +40,19 @@
 
 USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface;
 
-static void usb_process(void) {
+static void usb_process(void)
+{
 	LED1(1);
 	Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
 	do {
 		if (Endpoint_IsSETUPReceived())
-		  USB_Device_ProcessControlRequest();
+			USB_Device_ProcessControlRequest();
 	} while (USB_DeviceState != DEVICE_STATE_Configured);
 	LED1(0);
 }
 
-uint8_t uart_recv(void) {
+uint8_t uart_recv(void)
+{
 	do {
 		Endpoint_SelectEndpoint(CDC_RX_EPNUM);
 		do {
@@ -71,7 +73,8 @@ uint8_t uart_recv(void) {
 	} while (1);
 }
 
-void uart_send(uint8_t d) {
+void uart_send(uint8_t d)
+{
 	do {
 		Endpoint_SelectEndpoint(CDC_TX_EPNUM);
 		uint8_t s = UEINTX;
@@ -85,7 +88,8 @@ void uart_send(uint8_t d) {
 	} while (1);
 }
 
-uint8_t uart_isdata(void) {
+uint8_t uart_isdata(void)
+{
 	Endpoint_SelectEndpoint(CDC_RX_EPNUM);
 	uint8_t s = UEINTX;
 	if (s & _BV(RXOUTI)) {
@@ -97,11 +101,13 @@ uint8_t uart_isdata(void) {
 	return 0;
 }
 
-uint8_t uart_bulkrecv(void) {
+uint8_t uart_bulkrecv(void)
+{
 	return Endpoint_Read_Byte();
 }
 
-uint8_t uart_send_getfree(void) {
+uint8_t uart_send_getfree(void)
+{
 	do {
 		Endpoint_SelectEndpoint(CDC_TX_EPNUM);
 		uint8_t s = UEINTX;
@@ -114,11 +120,13 @@ uint8_t uart_send_getfree(void) {
 	} while(1);
 }
 
-void uart_bulksend(uint8_t d) {
+void uart_bulksend(uint8_t d)
+{
 	Endpoint_Write_Byte(d);
 }
 
-void uart_wait_txdone(void) {
+void uart_wait_txdone(void)
+{
 	Endpoint_SelectEndpoint(CDC_TX_EPNUM);
 	if (Endpoint_BytesInEndpoint()) {
 		Endpoint_ClearIN(); /* Flush TX.. */

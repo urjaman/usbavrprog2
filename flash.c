@@ -7,7 +7,8 @@
 
 static uint8_t flash_prot_in_use = 0;
 
-void flash_select_protocol(uint8_t allowed_protocols) {
+void flash_select_protocol(uint8_t allowed_protocols)
+{
 	if (allowed_protocols & CHIP_BUSTYPE_SPI) spi_enable();
 	else spi_disable();
 	if ((flash_prot_in_use = allowed_protocols & CHIP_BUSTYPE_PARALLEL)) {
@@ -17,12 +18,14 @@ void flash_select_protocol(uint8_t allowed_protocols) {
 	}
 }
 
-void flash_set_safe(void) {
+void flash_set_safe(void)
+{
 	spi_disable();
 	parallel_safe();
 }
 
-uint8_t flash_read(uint32_t addr) {
+uint8_t flash_read(uint32_t addr)
+{
 	switch (flash_prot_in_use) {
 		case 0:
 		default:
@@ -32,7 +35,8 @@ uint8_t flash_read(uint32_t addr) {
 	}
 }
 
-void flash_readn(uint32_t addr, uint32_t len) {
+void flash_readn(uint32_t addr, uint32_t len)
+{
 	switch (flash_prot_in_use) {
 		case 0:
 		default:
@@ -44,7 +48,8 @@ void flash_readn(uint32_t addr, uint32_t len) {
 	}
 }
 
-void flash_write(uint32_t addr, uint8_t data) {
+void flash_write(uint32_t addr, uint8_t data)
+{
 	switch (flash_prot_in_use) {
 		case 0:
 		default:

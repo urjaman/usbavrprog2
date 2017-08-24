@@ -74,3 +74,6 @@ clean:
 
 objdump: $(PROJECT).out
 	$(AVRBINDIR)avr-objdump -xdC $(PROJECT).out | less
+
+astyle:
+	astyle -A8 -t8 -xC110 -S -z2 -o -O $(SOURCES) $(HEADERS)

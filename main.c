@@ -19,7 +19,8 @@
 #include "spihw.h"
 #include "adc.h"
 
-int main(void) {
+int main(void)
+{
 	CLKPR = _BV(CLKPCE);
 	CLKPR = 0; // TODO: 3.3V support
 	adc_init();

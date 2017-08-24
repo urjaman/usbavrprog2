@@ -1,7 +1,7 @@
 /*
              LUFA Library
      Copyright (C) Dean Camera, 2010.
-              
+
   dean [at] fourwalledcubicle [dot] com
       www.fourwalledcubicle.com
 */
@@ -9,13 +9,13 @@
 /*
   Copyright 2010  Dean Camera (dean [at] fourwalledcubicle [dot] com)
 
-  Permission to use, copy, modify, distribute, and sell this 
+  Permission to use, copy, modify, distribute, and sell this
   software and its documentation for any purpose is hereby granted
-  without fee, provided that the above copyright notice appear in 
+  without fee, provided that the above copyright notice appear in
   all copies and that both that the copyright notice and this
-  permission notice and warranty disclaimer appear in supporting 
-  documentation, and that the name of the author not be used in 
-  advertising or publicity pertaining to distribution of the 
+  permission notice and warranty disclaimer appear in supporting
+  documentation, and that the name of the author not be used in
+  advertising or publicity pertaining to distribution of the
   software without specific, written prior permission.
 
   The author disclaim all warranties with regard to this
@@ -64,9 +64,8 @@ void Endpoint_ClearEndpoints(void)
 {
 	UEINT = 0;
 
-	for (uint8_t EPNum = 0; EPNum < ENDPOINT_TOTAL_ENDPOINTS; EPNum++)
-	{
-		Endpoint_SelectEndpoint(EPNum);	
+	for (uint8_t EPNum = 0; EPNum < ENDPOINT_TOTAL_ENDPOINTS; EPNum++) {
+		Endpoint_SelectEndpoint(EPNum);
 		UEIENX  = 0;
 		UEINTX  = 0;
 		UECFG1X = 0;
@@ -76,22 +75,17 @@ void Endpoint_ClearEndpoints(void)
 
 void Endpoint_ClearStatusStage(void)
 {
-	if (USB_ControlRequest.bmRequestType & REQDIR_DEVICETOHOST)
-	{
-		while (!(Endpoint_IsOUTReceived()))
-		{
+	if (USB_ControlRequest.bmRequestType & REQDIR_DEVICETOHOST) {
+		while (!(Endpoint_IsOUTReceived())) {
 			if (USB_DeviceState == DEVICE_STATE_Unattached)
-			  return;
+				return;
 		}
 
 		Endpoint_ClearOUT();
-	}
-	else
-	{
-		while (!(Endpoint_IsINReady()))
-		{
+	} else {
+		while (!(Endpoint_IsINReady())) {
 			if (USB_DeviceState == DEVICE_STATE_Unattached)
-			  return;
+				return;
 		}
 		Endpoint_ClearIN();
 	}
@@ -100,38 +94,33 @@ void Endpoint_ClearStatusStage(void)
 #if !defined(CONTROL_ONLY_DEVICE)
 uint8_t Endpoint_WaitUntilReady(void)
 {
-	#if (USB_STREAM_TIMEOUT_MS < 0xFF)
-	uint8_t  TimeoutMSRem = USB_STREAM_TIMEOUT_MS;	
-	#else
+#if (USB_STREAM_TIMEOUT_MS < 0xFF)
+	uint8_t  TimeoutMSRem = USB_STREAM_TIMEOUT_MS;
+#else
 	uint16_t TimeoutMSRem = USB_STREAM_TIMEOUT_MS;
-	#endif
+#endif
 
-	for (;;)
-	{
-		if (Endpoint_GetEndpointDirection() == ENDPOINT_DIR_IN)
-		{
+	for (;;) {
+		if (Endpoint_GetEndpointDirection() == ENDPOINT_DIR_IN) {
 			if (Endpoint_IsINReady())
-			  return ENDPOINT_READYWAIT_NoError;
-		}
-		else
-		{
+				return ENDPOINT_READYWAIT_NoError;
+		} else {
 			if (Endpoint_IsOUTReceived())
-			  return ENDPOINT_READYWAIT_NoError;
+				return ENDPOINT_READYWAIT_NoError;
 		}
 
 		if (USB_DeviceState == DEVICE_STATE_Unattached)
-		  return ENDPOINT_READYWAIT_DeviceDisconnected;
+			return ENDPOINT_READYWAIT_DeviceDisconnected;
 		else if (USB_DeviceState == DEVICE_STATE_Suspended)
-		  return ENDPOINT_READYWAIT_BusSuspended;
+			return ENDPOINT_READYWAIT_BusSuspended;
 		else if (Endpoint_IsStalled())
-		  return ENDPOINT_READYWAIT_EndpointStalled;
+			return ENDPOINT_READYWAIT_EndpointStalled;
 
-		if (USB_INT_HasOccurred(USB_INT_SOFI))
-		{
+		if (USB_INT_HasOccurred(USB_INT_SOFI)) {
 			USB_INT_Clear(USB_INT_SOFI);
 
 			if (!(TimeoutMSRem--))
-			  return ENDPOINT_READYWAIT_Timeout;
+				return ENDPOINT_READYWAIT_Timeout;
 		}
 	}
 }
@@ -140,69 +129,61 @@ uint8_t Endpoint_Discard_Stream(uint16_t Length
 #if !defined(NO_STREAM_CALLBACKS)
                                 , StreamCallbackPtr_t Callback
 #endif
-                                )
+                               )
 {
 	uint8_t  ErrorCode;
 
 	if ((ErrorCode = Endpoint_WaitUntilReady()))
-	  return ErrorCode;
+		return ErrorCode;
 
-	#if defined(FAST_STREAM_TRANSFERS)
+#if defined(FAST_STREAM_TRANSFERS)
 	uint8_t BytesRemToAlignment = (Endpoint_BytesInEndpoint() & 0x07);
 
-	if (Length >= 8)
-	{
+	if (Length >= 8) {
 		Length -= BytesRemToAlignment;
 
-		switch (BytesRemToAlignment)
-		{
+		switch (BytesRemToAlignment) {
 			default:
-				do
-				{
-					if (!(Endpoint_IsReadWriteAllowed()))
-					{
+				do {
+					if (!(Endpoint_IsReadWriteAllowed())) {
 						Endpoint_ClearOUT();
 
-						#if !defined(NO_STREAM_CALLBACKS)
+#if !defined(NO_STREAM_CALLBACKS)
 						if ((Callback != NULL) && (Callback() == STREAMCALLBACK_Abort))
-						  return ENDPOINT_RWSTREAM_CallbackAborted;
-						#endif
+							return ENDPOINT_RWSTREAM_CallbackAborted;
+#endif
 
 						if ((ErrorCode = Endpoint_WaitUntilReady()))
-						  return ErrorCode;
+							return ErrorCode;
 					}
 
 					Length -= 8;
 
 					Endpoint_Discard_Byte();
-			case 7: Endpoint_Discard_Byte();
-			case 6: Endpoint_Discard_Byte();
-			case 5: Endpoint_Discard_Byte();
-			case 4: Endpoint_Discard_Byte();
-			case 3: Endpoint_Discard_Byte();
-			case 2: Endpoint_Discard_Byte();
-			case 1:	Endpoint_Discard_Byte();
-				} while (Length >= 8);	
+				case 7: Endpoint_Discard_Byte();
+				case 6: Endpoint_Discard_Byte();
+				case 5: Endpoint_Discard_Byte();
+				case 4: Endpoint_Discard_Byte();
+				case 3: Endpoint_Discard_Byte();
+				case 2: Endpoint_Discard_Byte();
+				case 1:	Endpoint_Discard_Byte();
+				} while (Length >= 8);
 		}
 	}
-	#endif
+#endif
 
-	while (Length)
-	{
-		if (!(Endpoint_IsReadWriteAllowed()))
-		{
+	while (Length) {
+		if (!(Endpoint_IsReadWriteAllowed())) {
 			Endpoint_ClearOUT();
 
-			#if !defined(NO_STREAM_CALLBACKS)
+#if !defined(NO_STREAM_CALLBACKS)
 			if ((Callback != NULL) && (Callback() == STREAMCALLBACK_Abort))
-			  return ENDPOINT_RWSTREAM_CallbackAborted;
-			#endif
+				return ENDPOINT_RWSTREAM_CallbackAborted;
+#endif
 
 			if ((ErrorCode = Endpoint_WaitUntilReady()))
-			  return ErrorCode;
-		}
-		else
-		{
+				return ErrorCode;
+		} else {
 			Endpoint_Discard_Byte();
 			Length--;
 		}
