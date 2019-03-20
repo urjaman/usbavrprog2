@@ -40,11 +40,41 @@ CIFACE_APP(spitest_cmd, "SPILOOP")
 	luint2outdual(spi_txrx(0xDB));
 }
 
+static void send_hdrval(PGM_P hdr, uint32_t val)
+{
+	sendstr_P(hdr);
+	u32outdec(val);
+}
+
+static void send_pindv(PGM_P hdr, uint8_t mask)
+{
+	send_hdrval(hdr, (PIND & mask) ? 1 : 0 );
+}
+
+CIFACE_APP(miso_cmd, "MISO")
+{
+	send_pindv(PSTR("MISO:"), _BV(MISO));
+}
+
+CIFACE_APP(spistat_cmd, "SPISTAT")
+{
+	send_hdrval(PSTR("VSPI: "), measure_vspi() );
+	send_pindv(PSTR("\r\nMISO: "), _BV(MISO));
+	send_pindv(PSTR("\r\nWP: "), _BV(SPI_WP));
+	send_pindv(PSTR("\r\nHOLD: "), _BV(SPI_HOLD));
+
+	send_pindv(PSTR("\r\n!SPI_EN: "), _BV(SPI_EN));
+	send_pindv(PSTR("\r\n!CS: "), _BV(SS));
+	send_pindv(PSTR("\r\nSCK: "), _BV(SCK));
+	send_pindv(PSTR("\r\nMOSI: "), _BV(MOSI));
+}
+
 static void spi_override(uint8_t set, uint8_t clear)
 {
 	spi_enable();
 	spi_hw_off();
 	SPI_PORT = (SPI_PORT & ~clear) | set;
+	spistat_cmd();
 }
 
 CIFACE_APP(cs0_cmd, "CS0")
@@ -76,10 +106,5 @@ CIFACE_APP(mosi0_cmd, "MOSI0")
 CIFACE_APP(mosi1_cmd, "MOSI1")
 {
 	spi_override(_BV(MOSI), 0);
-}
-
-CIFACE_APP(miso_cmd, "MISO")
-{
-	sendstr_P( (PIND & _BV(MISO)) ? PSTR("1") : PSTR("0") );
 }
 

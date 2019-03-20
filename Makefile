@@ -15,8 +15,8 @@
 PROJECT=usbavrprog2
 DEPS=uart.h main.h flash.h parallel.h adc.h Makefile
 
-SOURCES=main.c flash.c spihw.c parallel.c adc.c cmds.c Descriptors.c fast-usbserial.c USB-Drivers/ConfigDescriptor.c USB-Drivers/DeviceStandardReq.c USB-Drivers/Events.c USB-Drivers/USBController.c USB-Drivers/USBTask.c USB-Drivers/Device.c USB-Drivers/Endpoint.c USB-Drivers/SimpleCDC.c USB-Drivers/USBInterrupt.c
-CMD_SOURCES=cmds.c
+CMD_SOURCES=cmds.c ciface/command_echo.c
+SOURCES=main.c flash.c spihw.c parallel.c adc.c $(CMD_SOURCES) Descriptors.c fast-usbserial.c USB-Drivers/ConfigDescriptor.c USB-Drivers/DeviceStandardReq.c USB-Drivers/Events.c USB-Drivers/USBController.c USB-Drivers/USBTask.c USB-Drivers/Device.c USB-Drivers/Endpoint.c USB-Drivers/SimpleCDC.c USB-Drivers/USBInterrupt.c
 
 CC=avr-gcc
 LD=avr-ld
