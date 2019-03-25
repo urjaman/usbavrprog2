@@ -29,6 +29,6 @@
 
 /* Optionally, if you want to make the auto-OPBUF-sizing code leave more/less RAM space for
  * rest of the system, define this. Default is below. Not needed for SPI-only flashers. */
-//#define FRSER_SYS_BYTES 320
+#define FRSER_SYS_BYTES 1024
 
 #endif
