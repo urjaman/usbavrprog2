@@ -21,9 +21,11 @@
 
 int main(void)
 {
-	CLKPR = _BV(CLKPCE);
-	CLKPR = 0; // TODO: 3.3V support
+	uint8_t pr = 0;
 	adc_init();
+	if (measure_vcc() < 4400) pr = _BV(CLKPS0);
+	CLKPR = _BV(CLKPCE);
+	CLKPR = pr;
 	/* LEDs */
 	DDRF |= _BV(2);
 	DDRF |= _BV(3);

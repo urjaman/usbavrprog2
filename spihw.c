@@ -24,20 +24,22 @@
 uint32_t spi_set_speed(uint32_t hz)
 {
 	uint8_t spi_set_ubrr = 0;
+	uint32_t f_cpu = F_CPU;
+	if (CLKPR) f_cpu = f_cpu / 2;
 	/* Range check. */
-	if (hz>(F_CPU/2)) {
+	if (hz>(f_cpu/2)) {
 		spi_set_ubrr = 0;
-	} else if (hz<(F_CPU/512)) {
+	} else if (hz<(f_cpu/512)) {
 		spi_set_ubrr = 255;
 	} else {
 		uint32_t bdiv = hz*2;
-		uint32_t ubrr_vp = (F_CPU / bdiv)-1;
+		uint32_t ubrr_vp = (f_cpu / bdiv)-1;
 		// If the division is not perfect, increase the result (round down).
-		if (F_CPU%bdiv) ubrr_vp++;
+		if (f_cpu%bdiv) ubrr_vp++;
 		spi_set_ubrr = ubrr_vp;
 	}
 	UBRR1 = spi_set_ubrr;
-	uint32_t new_hz = F_CPU / (((int)spi_set_ubrr+1)*2);
+	uint32_t new_hz = f_cpu / (((int)spi_set_ubrr+1)*2);
 	return new_hz;
 }
 #endif
@@ -59,7 +61,7 @@ void spi_enable(void)
 void spi_hw_on(void)
 {
 	UCSR1C = _BV(UMSEL11)|_BV(UMSEL10);
-	UBRR1 = 3; /* Default to 2Mhz */
+	UBRR1 = CLKPR ? 1 : 3; /* Default to 2Mhz */
 	UCSR1B = _BV(TXEN1)|_BV(RXEN1);
 }
 

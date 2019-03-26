@@ -16,7 +16,7 @@ PROJECT=usbavrprog2
 DEPS=uart.h main.h flash.h parallel.h adc.h Makefile
 
 CMD_SOURCES=cmds.c ciface/command_echo.c
-SOURCES=main.c flash.c spihw.c parallel.c adc.c $(CMD_SOURCES) Descriptors.c fast-usbserial.c USB-Drivers/ConfigDescriptor.c USB-Drivers/DeviceStandardReq.c USB-Drivers/Events.c USB-Drivers/USBController.c USB-Drivers/USBTask.c USB-Drivers/Device.c USB-Drivers/Endpoint.c USB-Drivers/SimpleCDC.c USB-Drivers/USBInterrupt.c
+SOURCES=main.c flash.c spihw.c parallel.c adc.c udelay.c $(CMD_SOURCES) Descriptors.c fast-usbserial.c USB-Drivers/ConfigDescriptor.c USB-Drivers/DeviceStandardReq.c USB-Drivers/Events.c USB-Drivers/USBController.c USB-Drivers/USBTask.c USB-Drivers/Device.c USB-Drivers/Endpoint.c USB-Drivers/SimpleCDC.c USB-Drivers/USBInterrupt.c
 
 CC=avr-gcc
 LD=avr-ld
@@ -77,3 +77,6 @@ objdump: $(PROJECT).out
 
 astyle:
 	astyle -A8 -t8 -xC110 -S -z2 -o -O $(SOURCES) $(HEADERS)
+
+picocom:
+	picocom /dev/ttyACM0

@@ -108,3 +108,19 @@ CIFACE_APP(mosi1_cmd, "MOSI1")
 	spi_override(_BV(MOSI), 0);
 }
 
+CIFACE_APP(listen_cmd, "LISTEN")
+{
+	
+}
+
+CIFACE_APP(spioff_cmd, "SPIOFF")
+{
+	spi_disable();
+}
+
+
+CIFACE_APP(f_cpu_cmd, "FREQ")
+{
+	if (CLKPR) sendstr_P(PSTR("8 Mhz (CLKPR set)"));
+	else sendstr_P(PSTR("16 Mhz (No div)"));
+}

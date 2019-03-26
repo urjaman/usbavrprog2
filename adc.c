@@ -22,7 +22,12 @@ void adc_init(void)
 
 static uint16_t adc_sample(void)
 {
-	ADCSRA = _BV(ADEN) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0) | _BV(ADSC);
+	/* Deal with being run at 2Mhz, 8Mhz or 16Mhz (2 Mhz before we have info on VCC) */
+	uint8_t ps = _BV(ADPS2);
+	uint8_t pr = CLKPR;
+	if (pr == 1) ps |= _BV(ADPS1);
+	if (!pr) ps |= _BV(ADPS1) | _BV(ADPS0);
+	ADCSRA = _BV(ADEN) | ps | _BV(ADSC);
 	while (ADCSRA & _BV(ADSC));
 	return ADC;
 }
