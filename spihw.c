@@ -45,14 +45,14 @@ uint32_t spi_set_speed(uint32_t hz)
 /* These control the external drivers. */
 void spi_disable(void)
 {
-	SPI_PORT |= _BV(SPI_EN);
 	DDR_SPI &= ~_BV(SPI_XBUF);
+	DDR_SPI &= ~_BV(SPI_EN);
 }
 
 void spi_enable(void)
 {
+	DDR_SPI |= _BV(SPI_EN);
 	DDR_SPI |= _BV(SPI_XBUF);
-	SPI_PORT &= ~_BV(SPI_EN);
 }
 
 /* For init and testing. */
@@ -66,8 +66,8 @@ void spi_hw_on(void)
 /* This initialises the SPI / UART MSPIM etc on boot. */
 void spi_init(void)
 {
-	SPI_PORT = _BV(SS) | _BV(MISO) | _BV(SPI_WP) | _BV(SPI_HOLD) | _BV(SPI_EN);
-	DDR_SPI = _BV(MOSI) | _BV(SCK) | _BV(SS) | _BV(SPI_EN);
+	SPI_PORT = _BV(SS) | _BV(MISO) | _BV(SPI_WP) | _BV(SPI_HOLD);
+	DDR_SPI = _BV(MOSI) | _BV(SCK) | _BV(SS);
 	spi_hw_on();
 }
 
